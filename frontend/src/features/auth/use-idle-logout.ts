@@ -15,7 +15,6 @@ const ACTIVITY_EVENTS: (keyof WindowEventMap)[] = [
   "touchstart",
   "scroll",
   "wheel",
-  "visibilitychange",
 ];
 
 /**

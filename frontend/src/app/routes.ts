@@ -27,6 +27,11 @@ export const paths = {
   placementDashboard: "/placement",
   placementPending: "/placement/pending",
   placementJobDetail: (id = ":jobId") => `/placement/jobs/${id}`,
+
+  // admin
+  adminDashboard: "/admin",
+  adminCompanies: "/admin/companies",
+  adminCompanyDetail: (id = ":companyId") => `/admin/companies/${id}`,
 } as const;
 
 /** The landing route for each role after login. */
@@ -34,5 +39,5 @@ export const roleHome: Record<Role, string> = {
   STUDENT: paths.studentDashboard,
   COMPANY: paths.companyDashboard,
   PLACEMENT_CELL: paths.placementDashboard,
-  ADMIN: paths.placementDashboard, // no admin module on the backend; send admins to placement view
+  ADMIN: paths.adminDashboard,
 };

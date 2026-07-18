@@ -28,8 +28,8 @@ export const navByRole: Record<Role, NavItem[]> = {
     { label: "Pending Review", to: paths.placementPending, icon: "pending_actions", matchPrefix: true },
   ],
   ADMIN: [
-    { label: "Overview", to: paths.placementDashboard, icon: "dashboard" },
-    { label: "Pending Review", to: paths.placementPending, icon: "pending_actions", matchPrefix: true },
+    { label: "Overview", to: paths.adminDashboard, icon: "dashboard" },
+    { label: "Companies", to: paths.adminCompanies, icon: "domain", matchPrefix: true },
   ],
 };
 

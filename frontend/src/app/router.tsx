@@ -17,6 +17,9 @@ import { CompanyJobDetailPage } from "@/pages/company/company-job-detail-page";
 import { PlacementDashboardPage } from "@/pages/placement/placement-dashboard-page";
 import { PlacementPendingPage } from "@/pages/placement/placement-pending-page";
 import { PlacementJobDetailPage } from "@/pages/placement/placement-job-detail-page";
+import { AdminDashboardPage } from "@/pages/admin/admin-dashboard-page";
+import { AdminCompaniesPage } from "@/pages/admin/admin-companies-page";
+import { AdminCompanyDetailPage } from "@/pages/admin/admin-company-detail-page";
 import { ProtectedRoute } from "@/features/auth/protected-route";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { paths } from "./routes";
@@ -28,8 +31,8 @@ import { paths } from "./routes";
  * <ProtectedRoute allow={[...]}> section keyed to a single role: unauthenticated users are sent
  * to /login, and a signed-in user who hits a path outside their role is redirected to their own
  * role's home (see ProtectedRoute). This is defence-in-depth on the client — the backend still
- * authorizes every request — but it stops a STUDENT from ever rendering a COMPANY or
- * PLACEMENT_CELL screen, and vice versa.
+ * authorizes every request — but it stops a STUDENT from ever rendering a COMPANY, PLACEMENT_CELL,
+ * or ADMIN screen, and vice versa.
  */
 export const router = createBrowserRouter([
   { path: paths.landing, element: <LandingPage /> },
@@ -72,9 +75,9 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // ---- Placement cell area (ADMIN shares this view; see roleHome) ---------
+  // ---- Placement cell area ------------------------------------------------
   {
-    element: <ProtectedRoute allow={["PLACEMENT_CELL", "ADMIN"]} />,
+    element: <ProtectedRoute allow={["PLACEMENT_CELL"]} />,
     children: [
       {
         element: <DashboardLayout />,
@@ -82,6 +85,21 @@ export const router = createBrowserRouter([
           { path: paths.placementDashboard, element: <PlacementDashboardPage /> },
           { path: paths.placementPending, element: <PlacementPendingPage /> },
           { path: paths.placementJobDetail(), element: <PlacementJobDetailPage /> },
+        ],
+      },
+    ],
+  },
+
+  // ---- Admin area ---------------------------------------------------------
+  {
+    element: <ProtectedRoute allow={["ADMIN"]} />,
+    children: [
+      {
+        element: <DashboardLayout />,
+        children: [
+          { path: paths.adminDashboard, element: <AdminDashboardPage /> },
+          { path: paths.adminCompanies, element: <AdminCompaniesPage /> },
+          { path: paths.adminCompanyDetail(), element: <AdminCompanyDetailPage /> },
         ],
       },
     ],
