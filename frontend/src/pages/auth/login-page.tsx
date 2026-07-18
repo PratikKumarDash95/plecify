@@ -16,11 +16,12 @@ import {
 } from "@/features/auth/schemas";
 import { paths, roleHome } from "@/app/routes";
 import { toApiError } from "@/lib/api-helpers";
-import { env } from "@/lib/env";
+import { useGoogleClientId } from "@/features/auth/google-config";
 import type { UserResponse } from "@/types/auth";
 
 export function LoginPage() {
   const { login, verifyOtp, resendOtp, loginWithGoogle } = useAuth();
+  const googleClientId = useGoogleClientId();
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname;
@@ -175,7 +176,7 @@ export function LoginPage() {
         </Button>
       </form>
 
-      {env.googleClientId && (
+      {googleClientId && (
         <>
           <div className="my-6 flex items-center gap-4">
             <span className="h-px flex-1 bg-outline-variant" />

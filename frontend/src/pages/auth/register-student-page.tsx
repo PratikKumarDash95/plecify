@@ -92,7 +92,7 @@ export function RegisterStudentPage() {
               label="University domain"
               leadingIcon="school"
               placeholder="e.g. nitk.edu.in"
-              hint="Your university's email domain, ending in .edu.in."
+              hint="Your university email or its domain, ending in .edu.in."
               error={errors.universityDomain?.message}
               {...register("universityDomain")}
             />

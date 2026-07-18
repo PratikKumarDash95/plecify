@@ -6,9 +6,12 @@ frontend/.env
 frontend/.env.local
 frontend/.env.*
 
+# Dependencies
+node_modules/
+frontend/node_modules/
+
 # Build output
 target/
-frontend/node_modules/
 frontend/dist/
 frontend/dist-ssr/
 
@@ -16,3 +19,13 @@ frontend/dist-ssr/
 .idea/
 *.iml
 .vscode/
+
+# Docs / scratch markdown — keep only the READMEs
+*.md
+!README.md
+!**/README.md
+
+# OS / logs
+.DS_Store
+*.log
+npm-debug.log*

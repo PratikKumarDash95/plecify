@@ -1,0 +1,16 @@
+{
+  "name": "hack",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Runs the Spring Boot backend and the Vite frontend together.",
+  "scripts": {
+    "start": "concurrently --names \"backend,frontend\" --prefix-colors \"cyan,magenta\" \"npm:start:backend\" \"npm:start:frontend\"",
+    "start:backend": "node scripts/start-backend.mjs",
+    "start:frontend": "cd frontend && npm run dev",
+    "install:frontend": "cd frontend && npm install",
+    "postinstall": "npm run install:frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

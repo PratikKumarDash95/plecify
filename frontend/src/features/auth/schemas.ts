@@ -37,7 +37,12 @@ export const studentRegisterSchema = z
       .string()
       .min(1, "University domain is required")
       .max(120)
-      .regex(/^[a-z0-9.-]+\.edu\.in$/i, "Enter a valid university domain ending in .edu.in"),
+      // Accept either the bare domain (centurionuniv.edu.in) or a full email
+      // (1120095@centurionuniv.edu.in) — strip the local part before validating.
+      .transform((v) => v.trim().split("@").pop() ?? "")
+      .refine((v) => /^[a-z0-9.-]+\.edu\.in$/i.test(v), {
+        message: "Enter a valid university domain ending in .edu.in",
+      }),
     rollNumber: z.string().min(1, "Roll number is required").max(40),
     department: z.string().min(1, "Department is required").max(100),
     branch: z.string().min(1, "Branch is required").max(100),
