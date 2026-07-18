@@ -18,7 +18,7 @@ function usePageTitle(role: Role): string {
     .find((item) =>
       item.matchPrefix ? location.pathname.startsWith(item.to) : location.pathname === item.to,
     );
-  return match?.label ?? "PlacementPro";
+  return match?.label ?? "Plecify";
 }
 
 export function DashboardLayout() {

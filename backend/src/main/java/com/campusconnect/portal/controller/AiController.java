@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/ai")
 @RequiredArgsConstructor
-@Tag(name = "AI Assistant", description = "Inline text polishing and the PlacementPro chatbot")
+@Tag(name = "AI Assistant", description = "Inline text polishing and the Plecify chatbot")
 public class AiController {
 
     private final AiAssistService aiAssistService;

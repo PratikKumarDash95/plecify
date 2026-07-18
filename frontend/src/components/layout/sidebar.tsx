@@ -44,7 +44,7 @@ export function Sidebar({
           </div>
           <div>
             <h2 className="text-primary text-xl font-headline-md font-semibold leading-tight">
-              PlacementPro
+              Plecify
             </h2>
             <p className="text-on-surface-variant text-xs uppercase tracking-wider">
               Enterprise Portal

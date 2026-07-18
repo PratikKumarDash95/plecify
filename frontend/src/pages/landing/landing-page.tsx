@@ -5,7 +5,7 @@ import { useAuth } from "@/features/auth/use-auth";
 import { paths, roleHome } from "@/app/routes";
 
 /**
- * Public marketing landing page (adapted from the Stitch "placementpro_full_landing_page" design).
+ * Public marketing landing page for Plecify.
  * Rendered at "/". Anonymous visitors see Sign In / Get Started CTAs; an already-authenticated
  * user gets a "Go to dashboard" shortcut into their role home instead.
  */
@@ -140,7 +140,7 @@ export function LandingPage() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-container text-xl font-bold text-white">
               P
             </div>
-            <span className="text-xl font-bold tracking-tight">PlacementPro</span>
+            <span className="text-xl font-bold tracking-tight">Plecify</span>
           </Link>
 
           <nav className="hidden items-center gap-8 md:flex">
@@ -240,7 +240,7 @@ export function LandingPage() {
             <div className="relative lg:ml-auto">
               <img
                 src="/image.png"
-                alt="PlacementPro dashboard preview showing job listings and application analytics"
+                alt="Plecify dashboard preview showing job listings and application analytics"
                 className="mx-auto h-auto w-full max-w-xl rounded-2xl lg:translate-x-6"
                 loading="eager"
               />
@@ -454,7 +454,7 @@ export function LandingPage() {
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-container text-xl font-bold text-white">
                   P
                 </div>
-                <span className="text-xl font-bold tracking-tight">PlacementPro</span>
+                <span className="text-xl font-bold tracking-tight">Plecify</span>
               </Link>
               <p className="mb-6 max-w-sm text-sm text-on-surface-variant">
                 Empowering campuses with intelligent recruitment solutions.
@@ -480,7 +480,7 @@ export function LandingPage() {
             ))}
           </div>
           <div className="border-t border-outline-variant/40 pt-8 text-center text-sm text-on-surface-variant">
-            © {new Date().getFullYear()} PlacementPro. All rights reserved.
+            © {new Date().getFullYear()} Plecify. All rights reserved.
           </div>
         </div>
       </footer>

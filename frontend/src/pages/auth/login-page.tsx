@@ -140,7 +140,7 @@ export function LoginPage() {
   }
 
   return (
-    <AuthLayout title="Welcome back" subtitle="Sign in to PlacementPro to continue.">
+    <AuthLayout title="Welcome back" subtitle="Sign in to Plecify to continue.">
       <form className="space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
         <Input
           label="Email address"

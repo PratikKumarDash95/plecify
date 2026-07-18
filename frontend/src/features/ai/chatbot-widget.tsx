@@ -9,7 +9,7 @@ import type { ChatMessageDto } from "@/types/ai";
 const GREETING: ChatMessageDto = {
   role: "assistant",
   content:
-    "Hi! I'm the PlacementPro assistant. Ask me about jobs, eligibility, or applications, " +
+    "Hi! I'm the Plecify assistant. Ask me about jobs, eligibility, or applications, " +
     "or paste a draft and I'll help you polish it.",
 };
 
@@ -83,7 +83,7 @@ export function ChatbotWidget() {
       {open && (
         <div
           role="dialog"
-          aria-label="PlacementPro assistant"
+          aria-label="Plecify assistant"
           className={cn(
             "fixed bottom-24 right-5 z-40 flex w-[calc(100vw-2.5rem)] max-w-sm flex-col",
             "rounded-2xl border border-outline-variant/40 bg-white shadow-ambient",
@@ -95,7 +95,7 @@ export function ChatbotWidget() {
               <Icon name="smart_toy" className="text-[20px]" />
             </span>
             <div className="min-w-0">
-              <p className="text-label-md font-label-md text-on-surface">PlacementPro Assistant</p>
+              <p className="text-label-md font-label-md text-on-surface">Plecify Assistant</p>
               <p className="truncate text-xs text-on-surface-variant">Here to help</p>
             </div>
           </div>
