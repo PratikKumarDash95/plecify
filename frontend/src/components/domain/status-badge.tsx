@@ -40,3 +40,7 @@ export function JobStatusBadge({ status }: { status: JobStatus }) {
 export function ApplicationStatusBadge({ status }: { status: ApplicationStatus }) {
   return <Badge variant={applicationStatusVariant[status]}>{applicationStatusLabels[status]}</Badge>;
 }
+
+export function CompanyStatusBadge({ status }: { status: ApprovalStatus }) {
+  return <Badge variant={approvalStatusVariant[status]}>{approvalStatusLabels[status]}</Badge>;
+}
