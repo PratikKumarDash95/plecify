@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    # Supabase Postgres (direct connection). SSL is required by Supabase.
+    # Password comes from the DATABASE_PASSWORD env var — never commit it.
+    url: ${DATABASE_URL:jdbc:postgresql://db.vcjvymievjqiyanrnmaw.supabase.co:5432/postgres?sslmode=require}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:}
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+app:
+  email:
+    provider: brevo   # dev sends real transactional email via Brevo when BREVO_API_KEY is set
+    brevo:
+      api-key: ${BREVO_API_KEY:}
+  storage:
+    provider: local
+
+logging:
+  level:
+    com.campusconnect.portal: DEBUG

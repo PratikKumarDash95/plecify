@@ -1,0 +1,14 @@
+spring:
+  jpa:
+    show-sql: false
+
+app:
+  email:
+    provider: brevo
+  storage:
+    provider: supabase
+
+logging:
+  level:
+    root: WARN
+    com.campusconnect.portal: INFO

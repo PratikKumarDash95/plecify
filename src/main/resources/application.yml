@@ -1,0 +1,173 @@
+spring:
+  application:
+    name: campus-recruitment-portal
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/campus_recruitment}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
+    hikari:
+      pool-name: campus-hikari-pool
+      maximum-pool-size: ${DB_POOL_MAX:20}
+      minimum-idle: ${DB_POOL_MIN:5}
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 50
+          time_zone: UTC
+        order_inserts: true
+        order_updates: true
+        default_batch_fetch_size: 32
+        format_sql: false
+    show-sql: false
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    placeholders:
+      # Bootstrap admin seeded by V3. Override ADMIN_EMAIL / ADMIN_PASSWORD in any
+      # shared environment — the defaults below are for local development only.
+      adminEmail: ${ADMIN_EMAIL:admin@campusconnect.io}
+      adminPassword: ${ADMIN_PASSWORD:Admin@12345}
+
+  mail:
+    host: ${SMTP_HOST:smtp-relay.brevo.com}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 15MB
+
+server:
+  port: ${PORT:8080}
+  error:
+    include-message: always
+    include-binding-errors: always
+  forward-headers-strategy: framework
+  compression:
+    enabled: true
+
+# ============================ Application config ============================
+app:
+  jwt:
+    # Base64-encoded 256-bit secret. Override in every non-dev environment.
+    secret: ${JWT_SECRET:c2VjdXJlLWRlZmF1bHQtZGV2LXNlY3JldC1jaGFuZ2UtbWUtaW4tcHJvZHVjdGlvbi0xMjM0NQ==}
+    access-token-expiration-ms: ${JWT_ACCESS_TTL:900000}        # 15 minutes
+    refresh-token-expiration-ms: ${JWT_REFRESH_TTL:604800000}   # 7 days
+    issuer: campus-recruitment-portal
+
+  security:
+    verification-token-expiration-ms: ${VERIFY_TTL:86400000}    # 24 hours
+    reset-token-expiration-ms: ${RESET_TTL:3600000}             # 1 hour
+    otp-expiration-ms: ${OTP_TTL:600000}                        # 10 minutes (login 2FA code)
+    rate-limit:
+      enabled: ${RATE_LIMIT_ENABLED:true}
+      capacity: ${RATE_LIMIT_CAPACITY:100}
+      refill-tokens: ${RATE_LIMIT_REFILL:100}
+      refill-duration-seconds: ${RATE_LIMIT_DURATION:60}
+      auth-capacity: ${RATE_LIMIT_AUTH_CAPACITY:10}
+
+  cache:
+    enabled: ${CACHE_ENABLED:true}
+    # Resolved user/authority lookups. Short TTL so account/role changes converge quickly;
+    # state-change points (logout, password reset) evict explicitly.
+    user-sessions:
+      maximum-size: ${CACHE_USER_MAX:10000}
+      ttl-seconds: ${CACHE_USER_TTL:600}          # 10 minutes
+    # In-flight two-step login challenge + failed-attempt counter, keyed by email.
+    # TTL tracks the OTP lifetime (OTP_TTL, 10 minutes) so stale challenges expire with the code.
+    login-sessions:
+      maximum-size: ${CACHE_LOGIN_MAX:10000}
+      ttl-seconds: ${CACHE_LOGIN_TTL:600}         # 10 minutes (matches otp-expiration-ms)
+
+  oauth:
+    google:
+      enabled: ${GOOGLE_OAUTH_ENABLED:true}
+      # Provide the OAuth client ID and secret through environment variables.
+      client-id: ${GOOGLE_CLIENT_ID:}
+      client-secret: ${GOOGLE_CLIENT_SECRET:}
+
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173}
+    allowed-methods: GET,POST,PUT,PATCH,DELETE,OPTIONS
+    allowed-headers: "*"
+    exposed-headers: Authorization,Content-Disposition
+    allow-credentials: true
+    max-age: 3600
+
+  email:
+    provider: ${EMAIL_PROVIDER:brevo}   # brevo | smtp | log
+    from-email: ${EMAIL_FROM:no-reply@campusconnect.io}
+    from-name: ${EMAIL_FROM_NAME:CampusConnect Placements}
+    base-url: ${APP_BASE_URL:http://localhost:8080}
+    frontend-url: ${FRONTEND_URL:http://localhost:3000}
+    brevo:
+      api-key: ${BREVO_API_KEY:}
+      api-url: https://api.brevo.com/v3/smtp/email
+
+  storage:
+    provider: ${STORAGE_PROVIDER:supabase}   # supabase | local
+    supabase:
+      url: ${SUPABASE_URL:}
+      service-key: ${SUPABASE_SERVICE_KEY:}
+      bucket-resumes: ${SUPABASE_BUCKET_RESUMES:resumes}
+      bucket-logos: ${SUPABASE_BUCKET_LOGOS:company-logos}
+      bucket-avatars: ${SUPABASE_BUCKET_AVATARS:avatars}
+    max-resume-size-bytes: 10485760   # 10MB
+    allowed-resume-types: application/pdf
+    allowed-image-types: image/png,image/jpeg,image/webp
+
+  ai:
+    enabled: ${AI_ENABLED:false}
+    provider: ${AI_PROVIDER:openrouter}
+    # OpenRouter API key — leave blank; set AI_API_KEY in the environment to enable live AI.
+    api-key: ${AI_API_KEY:}
+    api-url: ${AI_API_URL:https://openrouter.ai/api/v1/chat/completions}
+    # Pick your OpenRouter model here (e.g. openai/gpt-4o-mini, google/gemini-2.0-flash-001).
+    model: ${AI_MODEL:}
+    max-tokens: ${AI_MAX_TOKENS:1024}
+    timeout-ms: ${AI_TIMEOUT_MS:30000}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+    display-request-duration: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when_authorized
+
+logging:
+  level:
+    root: INFO
+    com.campusconnect.portal: ${LOG_LEVEL:DEBUG}
+    org.hibernate.SQL: WARN
