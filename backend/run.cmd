@@ -11,7 +11,7 @@ if exist ".env" (
     if not "!line!"=="" if not "!line:~0,1!"=="#" set "%%A=%%B"
   )
 ) else (
-  echo No .env found — copy .env.example to .env and fill in BREVO_API_KEY.
+  echo No .env found — create .env and fill in BREVO_API_KEY.
 )
 
 call mvnw.cmd spring-boot:run

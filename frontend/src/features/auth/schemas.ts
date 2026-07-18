@@ -6,6 +6,14 @@ export const loginSchema = z.object({
 });
 export type LoginFormValues = z.infer<typeof loginSchema>;
 
+export const otpSchema = z.object({
+  code: z
+    .string()
+    .min(1, "Code is required")
+    .regex(/^\d{6}$/, "Enter the 6-digit code"),
+});
+export type OtpFormValues = z.infer<typeof otpSchema>;
+
 // Backend requires a strong password; mirror the common policy client-side for fast feedback.
 const passwordSchema = z
   .string()

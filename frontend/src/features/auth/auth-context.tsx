@@ -3,14 +3,28 @@ import { authService } from "@/services/auth-service";
 import { onForcedLogout } from "@/lib/api-client";
 import { tokenStorage } from "@/lib/token-storage";
 import { isTokenExpired } from "@/lib/jwt";
-import type { LoginRequest, Role, UserResponse } from "@/types/auth";
+
+
+import type {
+  LoginChallengeResponse,
+  LoginRequest,
+  LoginResponse,
+  Role,
+  UserResponse,
+  VerifyOtpRequest,
+} from "@/types/auth";
 
 export interface AuthState {
   user: UserResponse | null;
   role: Role | null;
   isAuthenticated: boolean;
   isInitializing: boolean;
-  login: (payload: LoginRequest) => Promise<UserResponse>;
+  /** Step 1: verify credentials. Emails an OTP and returns the challenge; no session yet. */
+  login: (payload: LoginRequest) => Promise<LoginChallengeResponse>;
+  /** Step 2: exchange the emailed OTP for a session. */
+  verifyOtp: (payload: VerifyOtpRequest) => Promise<UserResponse>;
+  /** Re-sends the login OTP for an in-progress two-step login. */
+  resendOtp: (email: string) => Promise<void>;
   /** Exchanges a Google ID token (credential) for a session. */
   loginWithGoogle: (idToken: string) => Promise<UserResponse>;
   logout: () => Promise<void>;
@@ -54,17 +68,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => onForcedLogout(clearSession), [clearSession]);
 
   // Shared post-login bookkeeping: persist tokens + user, then update React state.
-  const establishSession = useCallback((result: Awaited<ReturnType<typeof authService.login>>) => {
+  const establishSession = useCallback((result: LoginResponse) => {
     tokenStorage.setTokens(result.accessToken, result.refreshToken);
     tokenStorage.setUser(result.user);
     setUser(result.user);
     return result.user;
   }, []);
 
-  const login = useCallback(
-    async (payload: LoginRequest) => establishSession(await authService.login(payload)),
+  // Step 1 does not establish a session — it only triggers the OTP email.
+  const login = useCallback((payload: LoginRequest) => authService.login(payload), []);
+
+  const verifyOtp = useCallback(
+    async (payload: VerifyOtpRequest) => establishSession(await authService.verifyOtp(payload)),
     [establishSession],
   );
+
+  const resendOtp = useCallback(async (email: string) => {
+    await authService.resendOtp({ email });
+  }, []);
 
   const loginWithGoogle = useCallback(
     async (idToken: string) => establishSession(await authService.googleLogin({ idToken })),
@@ -83,11 +104,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAuthenticated: !!user,
       isInitializing,
       login,
+      verifyOtp,
+      resendOtp,
       loginWithGoogle,
       logout,
       clearSession,
     }),
-    [user, isInitializing, login, loginWithGoogle, logout, clearSession],
+    [user, isInitializing, login, verifyOtp, resendOtp, loginWithGoogle, logout, clearSession],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -17,4 +17,9 @@ export const queryKeys = {
     pending: (params?: PageParams) => ["placement", "pending", params ?? {}] as const,
     job: (jobId: string) => ["placement", "job", jobId] as const,
   },
+  admin: {
+    companies: (status: string, params?: PageParams) =>
+      ["admin", "companies", status, params ?? {}] as const,
+    company: (companyId: string) => ["admin", "company", companyId] as const,
+  },
 } as const;

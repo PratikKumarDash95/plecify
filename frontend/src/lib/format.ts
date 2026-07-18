@@ -1,5 +1,6 @@
 import type {
   ApplicationStatus,
+  ApprovalStatus,
   JobStatus,
   JobType,
   WorkAuthorization,
@@ -21,6 +22,12 @@ export const jobStatusLabels: Record<JobStatus, string> = {
   REJECTED: "Rejected",
   CLOSED: "Closed",
   EXPIRED: "Expired",
+};
+
+export const approvalStatusLabels: Record<ApprovalStatus, string> = {
+  PENDING: "Pending review",
+  APPROVED: "Approved",
+  REJECTED: "Rejected",
 };
 
 export const applicationStatusLabels: Record<ApplicationStatus, string> = {

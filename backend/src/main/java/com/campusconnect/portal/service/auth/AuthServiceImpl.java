@@ -32,6 +32,8 @@ import com.campusconnect.portal.repository.UniversityRepository;
 import com.campusconnect.portal.repository.UserRepository;
 import com.campusconnect.portal.security.GoogleTokenVerifier;
 import com.campusconnect.portal.security.JwtService;
+import com.campusconnect.portal.security.LoginSessionCache;
+import com.campusconnect.portal.security.SessionCacheEvictor;
 import com.campusconnect.portal.service.email.EmailService;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import lombok.RequiredArgsConstructor;
@@ -82,6 +84,8 @@ public class AuthServiceImpl implements AuthService {
     private final EmailProperties emailProperties;
     private final SecurityProperties securityProperties;
     private final UserMapper userMapper;
+    private final LoginSessionCache loginSessionCache;
+    private final SessionCacheEvictor sessionCacheEvictor;
 
     // ------------------------------------------------------------------ registration
 
@@ -180,6 +184,9 @@ public class AuthServiceImpl implements AuthService {
         // is only minted once the user proves control of the mailbox via verifyLoginOtp.
         String code = verificationTokenService.issueLoginOtp(user);
         emailService.sendLoginOtp(user.getEmail(), user.getFullName(), code, otpExpiryMinutes());
+        // Track the in-flight challenge (and reset any prior attempt count) so verifyLoginOtp can
+        // throttle brute-force guessing of the low-entropy code.
+        loginSessionCache.startChallenge(user.getEmail(), user.getId());
         log.info("Issued login OTP for user {}", user.getId());
         return LoginChallengeResponse.of(user.getEmail(), otpExpirySeconds());
     }
@@ -193,8 +200,24 @@ public class AuthServiceImpl implements AuthService {
 
         // Re-validate account state: it could have been locked/disabled between the two steps.
         assertLoginable(user);
-        verificationTokenService.consumeLoginOtp(user, code);
 
+        // Throttle brute-force guessing: too many wrong codes burns the challenge, forcing a resend.
+        if (loginSessionCache.get(normalized) == null) {
+            throw new ApiException(ErrorCode.TOKEN_EXPIRED);
+        }
+        try {
+            verificationTokenService.consumeLoginOtp(user, code);
+        } catch (ApiException ex) {
+            if (ex.getErrorCode() == ErrorCode.TOKEN_INVALID
+                    && !loginSessionCache.registerFailedAttempt(normalized)) {
+                // Attempt budget exhausted — invalidate the code so a fresh challenge is required.
+                verificationTokenService.deleteLoginOtp(user);
+            }
+            throw ex;
+        }
+
+        // Success — drop the challenge so the completed session can't be reused.
+        loginSessionCache.clear(normalized);
         log.info("User {} completed OTP login", user.getId());
         return issueTokens(user, userAgent, ipAddress);
     }
@@ -207,6 +230,8 @@ public class AuthServiceImpl implements AuthService {
                     && !user.isAccountLocked()) {
                 String code = verificationTokenService.issueLoginOtp(user);
                 emailService.sendLoginOtp(user.getEmail(), user.getFullName(), code, otpExpiryMinutes());
+                // Fresh code, fresh attempt budget.
+                loginSessionCache.startChallenge(user.getEmail(), user.getId());
             }
         });
         // Silent regardless of outcome — do not disclose whether the email exists or is eligible.
@@ -320,6 +345,8 @@ public class AuthServiceImpl implements AuthService {
         user.setPasswordHash(passwordEncoder.encode(newPassword));
         // Any active sessions are invalidated so a leaked refresh token can't outlive the reset.
         refreshTokenService.revokeAll(user.getId());
+        // Drop any cached principal so the stale (old-password) session can't be served post-reset.
+        sessionCacheEvictor.evict(user.getId(), user.getEmail());
         log.info("Password reset completed for user {}", user.getId());
     }
 

@@ -1,9 +1,10 @@
 import { Badge, type BadgeProps } from "@/components/ui/badge";
 import {
   applicationStatusLabels,
+  approvalStatusLabels,
   jobStatusLabels,
 } from "@/lib/format";
-import type { ApplicationStatus, JobStatus } from "@/types/domain";
+import type { ApplicationStatus, ApprovalStatus, JobStatus } from "@/types/domain";
 
 type BadgeVariant = NonNullable<BadgeProps["variant"]>;
 
@@ -14,6 +15,12 @@ const jobStatusVariant: Record<JobStatus, BadgeVariant> = {
   REJECTED: "danger",
   CLOSED: "neutral",
   EXPIRED: "neutral",
+};
+
+const approvalStatusVariant: Record<ApprovalStatus, BadgeVariant> = {
+  PENDING: "warning",
+  APPROVED: "success",
+  REJECTED: "danger",
 };
 
 const applicationStatusVariant: Record<ApplicationStatus, BadgeVariant> = {

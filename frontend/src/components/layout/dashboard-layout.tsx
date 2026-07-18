@@ -4,6 +4,7 @@ import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
 import { ChatbotWidget } from "@/features/ai/chatbot-widget";
 import { useAuth } from "@/features/auth/use-auth";
+import { useIdleLogout } from "@/features/auth/use-idle-logout";
 import { navByRole } from "@/app/nav-config";
 import type { Role } from "@/types/auth";
 
@@ -26,6 +27,9 @@ export function DashboardLayout() {
   // role is guaranteed non-null here because this layout is always inside ProtectedRoute.
   const effectiveRole = (role ?? "STUDENT") as Role;
   const title = usePageTitle(effectiveRole);
+
+  // Students get an auto sign-out after 17 minutes of inactivity.
+  useIdleLogout(effectiveRole === "STUDENT");
 
   return (
     <div className="bg-background text-on-background min-h-screen flex">

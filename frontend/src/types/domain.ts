@@ -5,6 +5,9 @@ export type JobType = "FULL_TIME" | "INTERNSHIP" | "INTERNSHIP_PLUS_PPO" | "PART
 
 export type JobStatus = "DRAFT" | "PENDING" | "APPROVED" | "REJECTED" | "CLOSED" | "EXPIRED";
 
+/** Company review lifecycle, mirroring com.campusconnect.portal.common.enums.ApprovalStatus. */
+export type ApprovalStatus = "PENDING" | "APPROVED" | "REJECTED";
+
 export type ApplicationStatus =
   | "APPLIED"
   | "SHORTLISTED"
@@ -189,4 +192,38 @@ export interface StudentDashboardResponse {
   appliedJobs: number;
   interviewCount: number;
   upcomingDeadlines: EligibleJobResponse[];
+}
+
+// --- admin --------------------------------------------------------------------
+
+/** Row in the admin company-review list (com.campusconnect.portal.dto.admin.CompanySummaryResponse). */
+export interface CompanySummaryResponse {
+  id: string;
+  name: string;
+  industry?: string;
+  contactPersonName?: string;
+  contactEmail?: string;
+  status: ApprovalStatus;
+  registeredAt: string;
+}
+
+/** Full company profile for admin review (com.campusconnect.portal.dto.admin.CompanyResponse). */
+export interface CompanyResponse {
+  id: string;
+  name: string;
+  industry?: string;
+  website?: string;
+  description?: string;
+  logoUrl?: string;
+  headquarters?: string;
+  contactPersonName?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  accountEmail?: string;
+  status: ApprovalStatus;
+  registeredAt: string;
+}
+
+export interface RejectCompanyRequest {
+  reason: string;
 }

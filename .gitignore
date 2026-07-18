@@ -1,10 +1,10 @@
 # Secrets — never commit
 .env
 .env.local
+**/.env.[e]xample
 frontend/.env
 frontend/.env.local
 frontend/.env.*
-!frontend/.env.example
 
 # Build output
 target/

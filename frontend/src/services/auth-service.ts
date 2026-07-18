@@ -5,20 +5,36 @@ import type {
   AuthResponse,
   ForgotPasswordRequest,
   GoogleLoginRequest,
+  LoginChallengeResponse,
   LoginRequest,
   LoginResponse,
   RegisterCompanyRequest,
   RegisterStudentRequest,
+  ResendOtpRequest,
   ResendVerificationRequest,
   ResetPasswordRequest,
+  VerifyOtpRequest,
 } from "@/types/auth";
 import { tokenStorage } from "@/lib/token-storage";
 
 /** Thin, typed wrapper over the /api/v1/auth endpoints. Unwraps the ApiResponse envelope. */
 export const authService = {
-  async login(payload: LoginRequest): Promise<LoginResponse> {
-    const { data } = await apiClient.post<ApiResponse<LoginResponse>>("/auth/login", payload);
+  /** Step 1: verify credentials. On success an OTP is emailed; no tokens are returned yet. */
+  async login(payload: LoginRequest): Promise<LoginChallengeResponse> {
+    const { data } = await apiClient.post<ApiResponse<LoginChallengeResponse>>("/auth/login", payload);
     return unwrap(data);
+  },
+
+  /** Step 2: exchange the emailed OTP for an access/refresh token pair. */
+  async verifyOtp(payload: VerifyOtpRequest): Promise<LoginResponse> {
+    const { data } = await apiClient.post<ApiResponse<LoginResponse>>("/auth/verify-otp", payload);
+    return unwrap(data);
+  },
+
+  /** Re-sends the login OTP for an in-progress two-step login. */
+  async resendOtp(payload: ResendOtpRequest): Promise<string> {
+    const { data } = await apiClient.post<ApiResponse<void>>("/auth/resend-otp", payload);
+    return data.message;
   },
 
   /** Exchanges a Google ID token for our own access/refresh token pair. */

@@ -97,6 +97,15 @@ public class VerificationTokenService {
     }
 
     /**
+     * Hard-deletes the user's outstanding login OTP, if any. Used to burn the code once the
+     * caller's brute-force attempt budget is exhausted, forcing a fresh challenge.
+     */
+    @Transactional
+    public void deleteLoginOtp(User user) {
+        tokenRepository.deleteByUserIdAndType(user.getId(), TokenType.LOGIN_OTP);
+    }
+
+    /**
      * Validates and consumes a token of the expected type, returning its owning user.
      * A token is usable only if it exists, matches the type, is unexpired, and unused.
      *

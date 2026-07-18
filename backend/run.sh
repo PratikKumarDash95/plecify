@@ -10,7 +10,7 @@ if [ -f .env ]; then
   . ./.env
   set +a
 else
-  echo "No .env found — copy .env.example to .env and fill in BREVO_API_KEY." >&2
+  echo "No .env found — create .env and fill in BREVO_API_KEY." >&2
 fi
 
 exec ./mvnw spring-boot:run

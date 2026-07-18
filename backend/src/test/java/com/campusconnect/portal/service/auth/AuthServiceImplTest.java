@@ -32,6 +32,8 @@ import com.campusconnect.portal.repository.UniversityRepository;
 import com.campusconnect.portal.repository.UserRepository;
 import com.campusconnect.portal.security.GoogleTokenVerifier;
 import com.campusconnect.portal.security.JwtService;
+import com.campusconnect.portal.security.LoginSessionCache;
+import com.campusconnect.portal.security.SessionCacheEvictor;
 import com.campusconnect.portal.service.email.EmailService;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import org.junit.jupiter.api.BeforeEach;
@@ -80,6 +82,8 @@ class AuthServiceImplTest {
     @Mock private EmailProperties emailProperties;
     @Mock private SecurityProperties securityProperties;
     @Mock private UserMapper userMapper;
+    @Mock private LoginSessionCache loginSessionCache;
+    @Mock private SessionCacheEvictor sessionCacheEvictor;
 
     @InjectMocks private AuthServiceImpl authService;
 
